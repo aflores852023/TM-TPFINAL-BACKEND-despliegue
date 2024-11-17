@@ -6,9 +6,9 @@ const app = express();
 const PORT = 3000;
 
 app.get('/ping', (req, res) => {
-    const response = new ResponseBuilder()
+    
     try {
-        response
+        const response = new ResponseBuilder()
             .setOk(true)
             .setMessage('Success')
             .setStatus(200)
