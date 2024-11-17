@@ -5,11 +5,11 @@ class responseBuilder {
         status: 100,
         payload: {}
     }
-setOK(ok) {
+setOk(ok) {
     this.response.ok = ok;
     return this;
 }
-stStatus(status) {
+setStatus(status) {
     this.response.status = status;
     return this;
 }
@@ -25,3 +25,5 @@ build() {
     return this.response;
 }
 }
+
+export default responseBuilder
