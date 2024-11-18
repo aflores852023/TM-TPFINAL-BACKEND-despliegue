@@ -8,4 +8,5 @@ const statusRouter = express.Router()
 statusRouter.get('/ping', getPingController)
 
 
+
 export default statusRouter

@@ -3,6 +3,7 @@ import User from "../models/user.model.js"
 import ResponseBuilder from "../utils/builders/responseBuilders.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+
 export const registerUserController = async (req, res) => {
     try{
         const {name, email, password} = req.body
