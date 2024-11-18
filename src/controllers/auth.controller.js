@@ -25,8 +25,9 @@ export const registerUserController = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 15) //15 es la cantidad de rondas
         const verificationToken = jwt.sign({email: email}, ENVIROMENT.JWT_SECRET, { //Se genera el token de verificacion con la firma y el email, la firma es la clave secreta guardada en el .env
-            expiresIn: '1d'
+            expiresIn: '1d' //El token expira en 1 dia
         })
+  
 
         const newUser = new User({ //Se crea el usuario
             name,
