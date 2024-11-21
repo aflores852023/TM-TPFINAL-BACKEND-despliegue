@@ -13,6 +13,7 @@ import { verifyApikeyMiddleware } from "./middlewares/auth.middleware.js";
 
 const app = express();
 const PORT = ENVIROMENT.PORT || 3000
+const DB_URL = ENVIROMENT.DB_URL
 
 app.use(cors())
 app.use(express.json({ limit: '5mb' }))
@@ -24,5 +25,5 @@ app.use('/api/status', statusRouter)
 app.use('/api/auth', authRouter)
 
 app.listen(PORT, () => {
-    console.log(`El servidor se esta escuchando en http://localhost:${PORT}`)
+    console.log(`El servidor se esta escuchando en ${DB_URL} en el puerto ${PORT}`)
 })
