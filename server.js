@@ -17,8 +17,13 @@ const app = express();
 const PORT = ENVIROMENT.PORT || 3000;
 
 app.use(verifyApikeyMiddleware); // Middleware para verificar la API Key
-app.use(cors( {
-    origin: ENVIROMENT.URL_FRONT
+const allowedOrigins = ['https://tm-tpfinal-despliegue.vercel.app'];
+
+app.use(cors({
+    origin: allowedOrigins, // Permite solicitudes desde el frontend
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'], // Encabezados permitidos
+    credentials: true // Si necesitas enviar cookies o credenciales
 }));
 
 
