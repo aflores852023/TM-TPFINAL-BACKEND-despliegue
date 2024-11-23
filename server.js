@@ -17,7 +17,11 @@ const app = express();
 const PORT = ENVIROMENT.PORT || 3000;
 
 app.use(verifyApikeyMiddleware); // Middleware para verificar la API Key
-app.use(cors());
+app.use(cors( {
+    origin: ENVIROMENT.URL_FRONT
+}));
+
+
 app.use(express.json({ limit: '5mb' }));
 app.use('/api/status', statusRouter);
 app.use('/api/auth', authRouter);
