@@ -27,5 +27,5 @@ app.use(verifyApikeyMiddleware)
 
 
 app.listen(PORT, () => {
-    console.log(`El servidor se esta escuchando en ${DB_URL} en el puerto ${PORT}`)
+    console.log(`El servidor configurado con la BBDD en la url ${DB_URL} y el servidor de backend esta funcionando en la url http://localhost en el puerto ${PORT}`)
 })
