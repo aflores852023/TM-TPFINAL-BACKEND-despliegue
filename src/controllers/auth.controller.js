@@ -63,7 +63,7 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
             }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1d'
         })
-        const url_verification = `http://localhost:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}?x-api-key=${ENVIROMENT.API_KEY_INTERN}`
+        const url_verification = `${ENVIROMENT.URL_FRONT}:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}?x-api-key=${ENVIROMENT.API_KEY_INTERN}`
         await sendEmail({
             to: email,
             subject: 'Valida tu correo electronico',

@@ -7,7 +7,8 @@ import cors from 'cors'
 import authRouter from "./router/auth.router.js";
 import statusRouter from "./router/status.router.js";
 import { verifyApikeyMiddleware } from "./middlewares/auth.middleware.js";
-
+import dotenv from 'dotenv';
+dotenv.config(); // variables de entorno desde el archivo .env
 
 const app = express();
 const PORT = ENVIROMENT.PORT || 3000
@@ -27,5 +28,5 @@ app.use(verifyApikeyMiddleware)
 
 
 app.listen(PORT, () => {
-    console.log(`El servidor configurado con la BBDD en la url ${DB_URL} y el servidor de backend esta funcionando en la url http://localhost en el puerto ${PORT}`)
+    console.log(`El servidor configurado con la BBDD en la url ${DB_URL} y el servidor de backend esta funcionando en la url http://${ENVIROMENT.URL_FRONT} en el puerto ${PORT}`)
 })
