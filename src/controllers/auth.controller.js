@@ -63,6 +63,9 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
             }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1d'
         })
+        if (!ENVIROMENT.JWT_SECRET) {
+            throw new Error('JWT_SECRET no está configurado en el entorno');
+        }
         const url_verification = `${ENVIROMENT.URL_FRONT}:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}?x-api-key=${ENVIROMENT.API_KEY_INTERN}`
         await sendEmail({
             to: email,
@@ -102,6 +105,10 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
             res.sendStatus(400)
         }
         console.error('Error al registrar usuario:', error)
+        console.log("JWT_SECRET:", process.env.JWT_SECRET); // Verifica que la clave secreta esté cargada
+        console.log("PORT:", process.env.PORT); // Verifica que el puerto esté cargado
+        console.log("API_KEY_INTERN:", process.env.API_KEY_INTERN); // Verifica que la API Key esté cargada
+
         const response = new ResponseBuilder()
             .setOk(false)
             .setStatus(500)

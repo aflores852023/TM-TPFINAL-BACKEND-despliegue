@@ -76,16 +76,21 @@ export const verifyApikeyMiddleware = (req, res, next) => {
     console.log('Middleware de API Key activo');
 
     try {
-        // Busca la API key en el encabezado o en los parámetros de la URL
+        // Busca la API Key en el encabezado o en los parámetros de la URL
         const apikey_header = req.headers['x-api-key'];
         const apikey_query = req.query['x-api-key'];
 
+        // Selecciona la API Key (ya sea desde los encabezados o desde los parámetros de la URL)
         const apikey = apikey_header || apikey_query;
 
+        // Depuración: Imprime la API Key interna y la recibida
+        console.log('API Key interna desde ENV:', ENVIROMENT.API_KEY_INTERN);
         console.log('API Key recibida:', apikey);
 
-        // Compara la API Key recibida con la válida en el .env
-        if (!apikey || apikey !== ENVIROMENT.API_KEY_INTERN) {
+        // Asegúrate de que la API Key esté presente y sea válida
+        if (!apikey || apikey.trim() !== ENVIROMENT.API_KEY_INTERN.trim()) {
+            // Si la API Key no es válida, devuelve un error de autenticación
+            console.log('API Key no válida:', apikey);  // Mostrar el valor de la API Key recibida
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setMessage('Unauthorized')
@@ -94,12 +99,13 @@ export const verifyApikeyMiddleware = (req, res, next) => {
                     detail: 'La API Key no es válida',
                 })
                 .build();
-
             return res.status(401).json(response);
         }
 
-        return next(); // Si la API Key es válida, pasa al siguiente middleware o controlador
+        // Si la API Key es válida, pasa al siguiente middleware o controlador
+        return next();
     } catch (error) {
+        // Si ocurre un error durante el proceso, devuelve un error interno
         const response = new ResponseBuilder()
             .setOk(false)
             .setMessage('Error en la autenticación de la API Key')
