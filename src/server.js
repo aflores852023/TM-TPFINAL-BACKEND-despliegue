@@ -23,6 +23,9 @@ app.use(verifyApikeyMiddleware)
 
 app.use('/api/status', statusRouter)
 app.use('/api/auth', authRouter)
+app.get('/', (req, res) => {
+    res.status(200).send('Backend operativo');
+  });
 
 app.listen(PORT, () => {
     console.log(`El servidor se esta escuchando en ${DB_URL} en el puerto ${PORT}`)
