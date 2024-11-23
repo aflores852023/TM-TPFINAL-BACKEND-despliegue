@@ -84,20 +84,8 @@ export const verifyApikeyMiddleware = (req, res, next) => {
 
         console.log('API Key recibida:', apikey);
 
-        if (!apikey) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setMessage('Unauthorized')
-                .setStatus(401)
-                .setPayload({
-                    detail: 'Se espera una API Key',
-                })
-                .build();
-
-            return res.status(401).json(response);
-        }
-
-        if (apikey !== ENVIROMENT.API_KEY_INTERN) {
+        // Compara la API Key recibida con la válida en el .env
+        if (!apikey || apikey !== ENVIROMENT.API_KEY_INTERN) {
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setMessage('Unauthorized')
@@ -110,19 +98,16 @@ export const verifyApikeyMiddleware = (req, res, next) => {
             return res.status(401).json(response);
         }
 
-        next(); // Continúa con la siguiente capa de middleware o controlador
+        return next(); // Si la API Key es válida, pasa al siguiente middleware o controlador
     } catch (error) {
         const response = new ResponseBuilder()
             .setOk(false)
-            .setMessage('Error interno en el middleware')
+            .setMessage('Error en la autenticación de la API Key')
             .setStatus(500)
             .setPayload({
                 detail: error.message,
             })
             .build();
-
         return res.status(500).json(response);
     }
 };
-
-
