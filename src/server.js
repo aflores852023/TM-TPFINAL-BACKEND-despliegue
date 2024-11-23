@@ -9,13 +9,12 @@ import statusRouter from "./router/status.router.js";
 import { verifyApikeyMiddleware } from "./middlewares/auth.middleware.js";
 
 
-
-
 const app = express();
 const PORT = ENVIROMENT.PORT || 3000
 const DB_URL = ENVIROMENT.DB_URL
 
-app.use(cors())
+
+app.use(cors({ origin: 'https://tm-tpfinal-despliegue.vercel.app' }));
 app.use(express.json({ limit: '5mb' }))
 
 
