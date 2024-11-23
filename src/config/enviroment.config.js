@@ -18,7 +18,7 @@ const ENVIROMENT = {
     GMAIL_PASS: process.env.GMAIL_PASS,
     GMAIL_USER: process.env.GMAIL_USER,
     API_KEY_INTERN: process.env.API_KEY_INTERN,
-    URL_FRONT: process.env.URL_FRONT || 'http://localhost:5173' // Valor por defecto si no está definido
+    URL_FRONT: process.env.URL_FRONT 
 };
 
 export default ENVIROMENT;

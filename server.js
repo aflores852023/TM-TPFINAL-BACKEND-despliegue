@@ -30,8 +30,7 @@ app.use(cors({
 app.use(express.json({ limit: '5mb' }));
 app.use('/api/status', statusRouter);
 app.use('/api/auth', authRouter);
-
-app.get('/', (req, res) => {
+app.use('/', (req, res) => {
     res.status(200).send('Backend operativo');
 });
 
