@@ -57,6 +57,10 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
+        console.log('la password hash es ', hashedPassword,
+        console.log('el email es ', email)    
+
+        )
         const verificationToken = jwt.sign(
             {
                 email: email
@@ -66,8 +70,9 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
         if (!ENVIROMENT.JWT_SECRET) {
             throw new Error('JWT_SECRET no está configurado en el entorno');
         }
-        const url_verification = `${ENVIROMENT.URL_FRONT}:${ENVIROMENT.PORT}/api/auth/verify/${verificationToken}?x-api-key=${ENVIROMENT.API_KEY_INTERN}`
+        const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}?x-api-key=${ENVIROMENT.API_KEY_INTERN}`
         await sendEmail({
+            from: ENVIROMENT.GMAIL_USER,
             to: email,
             subject: 'Valida tu correo electronico',
             html: `
@@ -80,6 +85,13 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
             `
         })
         console.log('la url de validacion es ', url_verification)
+        console.log('Correo que se intentará enviar:', {
+            to: email,
+            from: ENVIROMENT.GMAIL_USER,
+            subject: 'Valida tu correo electrónico',
+        });
+        console.log('JWT_SECRET:', ENVIROMENT.JWT_SECRET); // Verifica que la clave secreta esté cargada
+        console.log('Datos recibidos:', req.body);
 
         const newUser = new User({
             name,
@@ -144,7 +156,7 @@ export const verifyMailValidationTokenController = async (req, res) => { //verif
         //Si fallara la lectura/verificacion/expiracion hara un throw
         //La constante decoded tiene el payload de mi token
         const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET)
-        console.log('el decoded es ', decoded)  
+        //console.log('el decoded es ', decoded)  
 
         //Busco al usuario en mi DB por email
         const user = await User.findOne({ email: decoded.email })
@@ -177,6 +189,10 @@ export const verifyMailValidationTokenController = async (req, res) => { //verif
 export const loginController = async (req, res) => { //POST login usuario
     try {
         const { email, password } = req.body
+        console.log('el email es ', email)
+        console.log('la password es ', password
+
+        )
         const user = await User.findOne({ email })
         if (!user) {
             const response = new ResponseBuilder()
@@ -204,6 +220,10 @@ export const loginController = async (req, res) => { //POST login usuario
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password)
+        
+        console.log('el isValidPassword es ', isValidPassword
+        
+        )
         if (!isValidPassword) {
             const response = new ResponseBuilder() //Credenciales incorrectas
                 .setOk(false)
@@ -271,6 +291,7 @@ export const forgotPasswordController = async (req, res) => { //POST forgot pass
         const URL_FRONT = ENVIROMENT.URL_FRONT
         const resetUrl = `${URL_FRONT}/reset-password/${resetToken}`
         sendEmail({
+            from: ENVIROMENT.GMAIL_USER,
             to: user.email,
             subject: 'Restablecer contraseña',
             html: `

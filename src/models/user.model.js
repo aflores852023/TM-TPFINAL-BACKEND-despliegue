@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     verificationToken: { //Token de verificacion
         type: String,
         required: true
+    },
+    avatar: { //Avatar
+        type: String, 
+        required:false
     }
 })
 
