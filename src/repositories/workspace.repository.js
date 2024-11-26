@@ -6,4 +6,4 @@ const createWorkspace = async (data) => await Workspace.create(data);
 const updateWorkspace = async (id, data) => await Workspace.findByIdAndUpdate(id, data, { new: true });
 const deleteWorkspace = async (id) => await Workspace.findByIdAndDelete(id);
 
-export default { getAllWorkspaces, getWorkspaceById, createWorkspace, updateWorkspace, deleteWorkspace };
+export  { getAllWorkspaces, getWorkspaceById, createWorkspace, updateWorkspace, deleteWorkspace };

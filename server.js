@@ -10,9 +10,7 @@ import channelRouter from './src/router/channel.router.js';
 import messageRouter from './src/router/message.router.js';
 import workspaceRouter from './src/router/workspace.router.js';
 import userRouter from './src/router/user.routes.js';
-
-
-
+import seedDatabase from './seed.js'; // Importa la función de semilla
 
 // Cargar variables de entorno
 dotenv.config(); // Esto debe ir al principio
@@ -29,6 +27,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'], // Encabezados permitidos
     credentials: true // Si necesitas enviar cookies o credenciales
 }));
+app.use(express.json());
 app.use(verifyApikeyMiddleware); // Middleware para verificar la API Key
 app.use('/api/channels', channelRouter);
 app.use('/api/messages', messageRouter);
@@ -41,6 +40,26 @@ app.get('/', (req, res) => {
     res.status(200).send('Backend operativo');
 });
 
-app.listen(PORT, () => {
-    console.log(`El servidor se esta escuchando en http://localhost:${PORT}`);
+// Función para verificar si las colecciones están vacías y hacer la carga de datos
+const checkAndSeedDatabase = async () => {
+    const usersCount = await mongoose.model('User').countDocuments();
+    const workspacesCount = await mongoose.model('Workspace').countDocuments();
+    const channelsCount = await mongoose.model('Channel').countDocuments();
+    const messagesCount = await mongoose.model('Message').countDocuments();
+
+    if (usersCount === 0 || workspacesCount === 0 || channelsCount === 0 || messagesCount === 0) {
+        console.log('Colecciones vacías, ejecutando seed...');
+        await seedDatabase();
+    } else {
+        console.log('Las colecciones ya contienen datos.');
+    }
+};
+
+// Ejecutar la verificación al iniciar el servidor
+checkAndSeedDatabase().then(() => {
+    app.listen(PORT, () => {
+        console.log(`El servidor se esta escuchando en http://localhost:${PORT}`);
+    });
+}).catch((error) => {
+    console.error('Error al verificar las colecciones o ejecutar el seed:', error);
 });
