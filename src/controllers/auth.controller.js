@@ -58,7 +58,7 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
 
         const hashedPassword = await bcrypt.hash(password, 10)
         console.log('la password hash es ', hashedPassword,
-        console.log('el email es ', email)    
+            console.log('el email es ', email)
 
         )
         const verificationToken = jwt.sign(
@@ -220,9 +220,9 @@ export const loginController = async (req, res) => { //POST login usuario
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password)
-        
+
         console.log('el isValidPassword es ', isValidPassword
-        
+
         )
         if (!isValidPassword) {
             const response = new ResponseBuilder() //Credenciales incorrectas
@@ -251,8 +251,8 @@ export const loginController = async (req, res) => { //POST login usuario
             .setPayload({
                 token,
                 user: {
-                    id: user._id,   
-                    name: user.name,    
+                    id: user._id,
+                    name: user.name,
                     email: user.email,
                     role: user.role
                 }
@@ -287,7 +287,8 @@ export const forgotPasswordController = async (req, res) => { //POST forgot pass
         const resetToken = jwt.sign({ email: user.email }, ENVIROMENT.JWT_SECRET, {
             expiresIn: '1h'
         })
-        //TODO crear una url_front en el ENVIROMENT
+        user.resetToken = resetToken;
+        await UserRepository.guardarUsuario(user); // Asegúrate de que esto esté implementado
         const URL_FRONT = ENVIROMENT.URL_FRONT
         const resetUrl = `${URL_FRONT}/reset-password/${resetToken}`
         sendEmail({
@@ -319,85 +320,34 @@ export const forgotPasswordController = async (req, res) => { //POST forgot pass
 }
 
 
-export const resetTokenController = async (req, res) => { //POST reset token
+export const resetTokenController = async (req, res) => {
+    const { reset_token } = req.params;
+    const { password } = req.body;
+
+    console.log('Reset Token recibido:', reset_token);
+    console.log('Password recibido:', password);
+    if (!reset_token || !password) {
+        return res.status(400).json({ ok: false, message: 'Token o contraseña faltante.' });
+    }
+
     try {
-        const { password } = req.body
-        const { reset_token } = req.params
+        // Busca al usuario por el token de restablecimiento
+        const user = await User.findOne({ resetToken: reset_token });
 
-        if (!password) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(400)
-                .setMessage('Se requiere la nueva contraseña')
-                .setPayload({
-                    detail: 'Falta contraseña nueva'
-                })
-                .build()
-            return res.json(response)
-        }
-        if (!reset_token) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(400)
-                .setMessage('Token Incorrecto')
-                .setPayload({
-                    detail: 'El reset_token expiro o no es valido'
-                })
-                .build()
-            return res.json(response)
-        }
-
-        const decoded = jwt.verify(reset_token, ENVIROMENT.JWT_SECRET)
-
-        console.log('Token decodificado:', decoded);
-
-        if (!decoded) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(400)
-                .setMessage('Token Incorrecto')
-                .setPayload({
-                    detail: 'Fallo token de verificación'
-                })
-                .build()
-            return res.json(response)
-        }
-
-        const { email } = decoded
-
-        const user = await UserRepository.obtenerPorEmail(email)
         if (!user) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setStatus(400)
-                .setMessage('No se encontro el usuario')
-                .setPayload({
-                    detail: 'Usuario inexistente o invalido'
-                })
-                .build()
-            return res.json(response)
+            return res.status(404).json({ ok: false, message: 'Token no válido o expirado.' });
         }
-        const encriptedPassword = await bcrypt.hash(password, 10);
 
-        user.password = encriptedPassword
-        await user.save()
+        // Hashear la nueva contraseña
+        const hashedPassword = await bcrypt.hash(password, 10); // 10 es el saltRounds
+        user.password = hashedPassword;
+        user.resetToken = null; // Limpia el token una vez que se usa
+        await UserRepository.guardarUsuario(user);
 
-        const response = new ResponseBuilder()
-            .setOk(true)
-            .setStatus(200)
-            .setMessage('Contraseña restablecida!')
-            .setPayload({
-                detail: 'Se actualizo la contraseña correctamente'
-            })
-        res.status(200).json(response)
-
+        res.json({ ok: true, message: 'Contraseña restablecida con éxito.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ ok: false, message: 'Error interno del servidor.' });
     }
-    catch (error) {
-        return res.status(500).json({
-            ok: false,
-            message: 'Error interno del servidor',
-            error: error.message,
-        });
-    }
-}
+};
 

@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
     avatar: { //Avatar
         type: String, 
         required:false
+    },
+    resetToken: { //Token de restablecimiento de contraseña
+        type: String,
+        required: false
     }
 })
 
