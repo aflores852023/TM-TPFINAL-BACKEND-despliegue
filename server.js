@@ -10,7 +10,7 @@ import channelRouter from './src/router/channel.router.js';
 import messageRouter from './src/router/message.router.js';
 import workspaceRouter from './src/router/workspace.router.js';
 import userRouter from './src/router/user.routes.js';
-import seedDatabase from './seed.js'; // Importa la función de semilla
+//import seedDatabase from './seed.js'; // Importa la función de semilla
 
 // Cargar variables de entorno
 dotenv.config(); // Esto debe ir al principio
@@ -56,10 +56,10 @@ const checkAndSeedDatabase = async () => {
 };
 
 // Ejecutar la verificación al iniciar el servidor
-checkAndSeedDatabase().then(() => {
-    app.listen(PORT, () => {
-        console.log(`El servidor se esta escuchando en http://localhost:${PORT}`);
-    });
-}).catch((error) => {
-    console.error('Error al verificar las colecciones o ejecutar el seed:', error);
+//checkAndSeedDatabase().then(() => {
+app.listen(PORT, () => {
+    console.log(`El servidor se esta escuchando en http://localhost:${PORT}`);
 });
+//}).catch((error) => {
+//    console.error('Error al verificar las colecciones o ejecutar el seed:', error);
+//});

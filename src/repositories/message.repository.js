@@ -6,4 +6,5 @@ const createMessage = async (data) => await Message.create(data);
 const updateMessage = async (id, data) => await Message.findByIdAndUpdate(id, data, { new: true });
 const deleteMessage = async (id) => await Message.findByIdAndDelete(id);
 
+
 export default { getAllMessages, getMessageById, createMessage, updateMessage, deleteMessage };

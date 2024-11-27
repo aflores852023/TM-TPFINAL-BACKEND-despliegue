@@ -70,7 +70,7 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
         if (!ENVIROMENT.JWT_SECRET) {
             throw new Error('JWT_SECRET no está configurado en el entorno');
         }
-        const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}?x-api-key=${ENVIROMENT.API_KEY_INTERN}`
+        const url_verification = `${ENVIROMENT.URL_FRONT}/verify/?token=${verificationToken}?x-api-key=${ENVIROMENT.API_KEY_INTERN}`
         await sendEmail({
             from: ENVIROMENT.GMAIL_USER,
             to: email,
