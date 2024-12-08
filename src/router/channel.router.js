@@ -7,11 +7,12 @@ import {
   deleteChannel,
   getChannelsByWorkspace,
 } from '../controllers/channel.controller.js';
-import { getAllMessagesByChannelId } from '../controllers/channel.controller.js';
+import { createMessageInChannel, getMessagesByChannelId } from '../controllers/channel.controller.js';
 const router = express.Router();
 
 // Rutas CRUD generales
-router.get('/:channelId/messages', getAllMessagesByChannelId);
+router.post('/:channelId/messages', createMessageInChannel);
+router.get('/:channelId/messages', getMessagesByChannelId);
 router.get('/workspaces/:workspaceId/channels', getChannelsByWorkspace);
 router.get('/', getAllChannels);
 router.get('/:id', getChannelById);

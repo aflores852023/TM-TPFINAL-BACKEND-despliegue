@@ -1,4 +1,6 @@
 import * as MessageRepository from '../repositories/message.repository.js';
+import Message from '../models/Message.js';
+import mongoose from 'mongoose';
 
 export const getAllMessages = async (req, res) => {
     try {
@@ -51,3 +53,25 @@ export const deleteMessage = async (req, res) => {
     }
 };
 
+export const getMessagesByChannelId = async (req, res) => {
+    const { channel_id } = req.params;
+
+    try {
+        // Verificar si el `channel_id` es un ObjectId válido
+        if (!mongoose.Types.ObjectId.isValid(channel_id)) {
+            return res.status(400).json({ ok: false, message: 'Invalid channel ID format.' });
+        }
+
+        // Buscar mensajes asociados al canal
+        const messages = await Message.find({ channelId: channel_id }).exec();
+
+        if (!messages.length) {
+            return res.status(404).json({ ok: false, message: 'No messages found for this channel.' });
+        }
+
+        res.status(200).json({ ok: true, data: messages });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ ok: false, message: 'Error fetching messages', error });
+    }
+};

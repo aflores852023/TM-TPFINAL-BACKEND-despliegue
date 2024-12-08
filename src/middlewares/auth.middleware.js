@@ -4,73 +4,56 @@ import jwt from 'jsonwebtoken'
 
 
 export const verifyTokenMiddleware = (roles_permitidos = []) => {
-
     return (req, res, next) => {
         try {
-            const auth_header = req.headers['authorization']
-
+            const auth_header = req.headers['authorization'];
             if (!auth_header) {
-                const response = new ResponseBuilder()
-                    .setOk(false)
-                    .setMessage('Falta token de autorizacion')
-                    .setStatus(401)
-                    .setPayload({
-                        detail: 'Se espera un token de autorizacion'
-                    })
-                    .build()
-
-                return res.status(401).json(response)
+                console.log('Falta el encabezado de autorización.');
+                return res.status(401).json({
+                    ok: false,
+                    message: 'Falta token de autorización',
+                    detail: 'Se espera un token de autorización',
+                });
             }
 
-            const access_token = auth_header.split(' ')[1]
+            const access_token = auth_header.split(' ')[1];
             if (!access_token) {
-                const response = new ResponseBuilder()
-                    .setOk(false)
-                    .setMessage('El token de autorizacion esta malformado')
-                    .setStatus(401)
-                    .setPayload({
-                        detail: 'Se espera un token de autorizacion'
-                    })
-                    .build()
-
-                return res.status(401).json(response)
-            }
-            const decoded = jwt.verify(access_token, ENVIROMENT.JWT_SECRET)
-            
-            req.user = decoded
-
-            //Si hay roles y no esta incluido el rol del usuario dentro de los roles permitidos, tiramos error
-            if(roles_permitidos.length &&  !roles_permitidos.includes(req.user.role)){
-                const response = new ResponseBuilder()
-                    .setOk(false)
-                    .setMessage('Acceso restringido')
-                    .setStatus(403)
-                    .setPayload({
-                        detail: 'No tienes los permisos necesarios para realizar esta operacion'
-                    })
-                    .build()
-
-                return res.status(403).json(response)
+                console.log('Token malformado.');
+                return res.status(401).json({
+                    ok: false,
+                    message: 'El token de autorización está malformado',
+                    detail: 'Se espera un token de autorización',
+                });
             }
 
-            return next() //pasamos al sig controllador
-        }
-        catch (error) {
-            const response = new ResponseBuilder()
-                .setOk(false)
-                .setMessage('Fallo al autentificar')
-                .setStatus(401)
-                .setPayload(
-                    {
-                        detail: error.message
-                    }
-                )
-                .build()
-            return res.status(401).json(response)
-        }
-    }
+            // Decodifica y verifica el token
+            console.log('Token recibido:', access_token);
+            const decoded = jwt.verify(access_token, ENVIROMENT.JWT_SECRET);
+            console.log('Token decodificado:', decoded);
 
-}
+            req.user = decoded;
+
+            // Verifica roles si es necesario
+            if (roles_permitidos.length && !roles_permitidos.includes(req.user.role)) {
+                console.log('Acceso denegado. Rol no permitido:', req.user.role);
+                return res.status(403).json({
+                    ok: false,
+                    message: 'Acceso restringido',
+                    detail: 'No tienes los permisos necesarios para realizar esta operación',
+                });
+            }
+
+            next(); // Pasa al siguiente middleware/controlador
+        } catch (error) {
+            console.error('Error al verificar el token:', error.message);
+            return res.status(401).json({
+                ok: false,
+                message: 'Fallo al autenticar',
+                detail: error.message,
+            });
+        }
+    };
+};
 
 export const verifyApikeyMiddleware = (req, res, next) => {
     console.log('Middleware de API Key activo');
