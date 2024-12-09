@@ -47,7 +47,7 @@ export const createChannel = async (req, res) => {
         await Message.create({
             text: '¡Bienvenido al canal!',
             channelId: newChannel._id,
-            senderId: 'System', // Usar un valor estático para mensajes del sistema
+            senderId: null, // Valor nulo para mensajes del sistema
         });
 
         res.status(201).json({ ok: true, data: newChannel });
@@ -111,18 +111,16 @@ export const getChannelsByWorkspace = async (req, res) => {
 // Crear un nuevo mensaje en un canal
 export const createMessageInChannel = async (req, res) => {
     try {
-        const token = req.headers.authorization.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const senderId = decoded.id;
-
         const { channelId } = req.params;
         const { text } = req.body;
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const senderId = decoded ? decoded.id : SYSTEM_USER_ID; // Usa el ID del sistema si no hay usuario autenticado.
 
-        if (!text) {
-            return res.status(400).json({ ok: false, message: 'Text is required.' });
+        if (!mongoose.Types.ObjectId.isValid(senderId)) {
+            return res.status(400).json({ ok: false, message: 'Invalid sender ID.' });
         }
 
-      
         const message = await Message.create({
             text,
             senderId,
@@ -136,6 +134,7 @@ export const createMessageInChannel = async (req, res) => {
     }
 };
 
+
 export const getMessagesByChannelId = async (req, res) => {
     const { channelId } = req.params;
 
@@ -143,8 +142,11 @@ export const getMessagesByChannelId = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(channelId)) {
             return res.status(400).json({ ok: false, message: 'Invalid channel ID format.' });
         }
+
         console.log('el valor del channelId para ir a buscar los mensajes asociados es:', channelId);
-        const messages = await Message.find({ channelId }).exec();
+
+        // Ordenar los mensajes por el campo `timestamp` en orden ascendente
+        const messages = await Message.find({ channelId }).sort({ timestamp: 1 }).exec();
 
         const formattedMessages = messages.map((message) => ({
             text: message.text || '',
@@ -164,3 +166,4 @@ export const getMessagesByChannelId = async (req, res) => {
         return res.status(500).json({ ok: false, message: 'Error fetching messages.', error: error.message });
     }
 };
+
