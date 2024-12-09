@@ -30,12 +30,34 @@ export const getChannelById = async (req, res) => {
 
 export const createChannel = async (req, res) => {
     try {
-        const newChannel = await ChannelRepository.createChannel(req.body);
+        const { name, workspaceId } = req.body;
+
+        console.log('Datos recibidos para crear canal:', { name, workspaceId });
+
+        if (!name || !workspaceId) {
+            return res.status(400).json({ ok: false, message: 'Name and workspaceId are required.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
+            return res.status(400).json({ ok: false, message: 'Invalid workspace ID format.' });
+        }
+
+        const newChannel = await Channel.create({ name, workspaceId });
+
+        await Message.create({
+            text: '¡Bienvenido al canal!',
+            channelId: newChannel._id,
+            senderId: 'System', // Usar un valor estático para mensajes del sistema
+        });
+
         res.status(201).json({ ok: true, data: newChannel });
     } catch (error) {
-        res.status(500).json({ ok: false, message: 'Error creating channel', error });
+        console.error('Error creating channel:', error.message);
+        res.status(500).json({ ok: false, message: 'Error creating channel', error: error.message });
     }
 };
+
+
 
 export const updateChannel = async (req, res) => {
     try {
