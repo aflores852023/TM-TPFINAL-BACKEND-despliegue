@@ -127,7 +127,7 @@ export const createMessageInChannel = async (req, res) => {
             channelId,
         });
 
-        res.status(201).json({ ok: true, data: message });
+        res.status(200).json({ ok: true, data: message });
     } catch (error) {
         console.error('Error al crear el mensaje:', error);
         res.status(500).json({ ok: false, message: 'Error creating message.', error: error.message });
