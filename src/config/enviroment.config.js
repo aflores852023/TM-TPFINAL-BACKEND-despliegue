@@ -18,7 +18,7 @@ const ENVIROMENT = {
     GMAIL_PASS: process.env.GMAIL_PASS,
     GMAIL_USER: process.env.GMAIL_USER,
     API_KEY_INTERN: process.env.API_KEY_INTERN,
-    URL_FRONT: process.env.URL_FRONT, 
+    URL_FRONT: 'https://tm-tpfinal-despliegue.vercel.app',
     URL_BACKEND: process.env.URL_BACKEND
 };
 

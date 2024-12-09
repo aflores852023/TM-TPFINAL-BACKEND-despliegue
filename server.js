@@ -20,7 +20,7 @@ console.log("API Key Intern desde ENV:", process.env.API_KEY_INTERN);
 
 const app = express();
 const PORT = ENVIROMENT.PORT || 3000;
-const allowedOrigins = [ENVIROMENT.URL_FRONT];
+const allowedOrigins = [ENVIROMENT.URL_FRONT, 'https://tm-tpfinal-despliegue.vercel.app'];
 app.use(cors({
     origin: allowedOrigins, // Permite solicitudes desde el frontend
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
