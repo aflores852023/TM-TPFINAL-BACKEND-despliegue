@@ -70,7 +70,7 @@ export const verifyApikeyMiddleware = (req, res, next) => {
         console.log('API Key interna desde ENV:', ENVIROMENT.API_KEY_INTERN);
         console.log('API Key recibida:', apikey);
 
-        // Asegúrate de que la API Key esté presente y sea válida
+        //  la API Key esté presente y sea válida
         if (!apikey || apikey.trim() !== ENVIROMENT.API_KEY_INTERN.trim()) {
             // Si la API Key no es válida, devuelve un error de autenticación
             console.log('API Key no válida:', apikey);  // Mostrar el valor de la API Key recibida
