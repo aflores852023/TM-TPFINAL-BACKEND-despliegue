@@ -1,4 +1,4 @@
-//import seedDatabase from './seed.js';
+ 
 import express from "express";
 import mongoose from './src/db/config.js';
 import cors from 'cors';
