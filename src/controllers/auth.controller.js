@@ -186,16 +186,17 @@ export const verifyMailValidationTokenController = async (req, res) => { //verif
     }
 }
 
+
 export const loginController = async (req, res) => { //POST login usuario
     console.log('Llegó al controlador de login. Body recibido:', req.body);
 
     try {
         const { email, password } = req.body
         console.log('el email es ', email)
-        console.log('la password es ', password
-
-        )
-        const user = await User.findOne({ email })
+        console.log('la password es ', password)
+        console.log('Buscando usuario con email:', email);
+        const user = await User.findOne({ email });
+        console.log('Usuario encontrado:', user);
         if (!user) {
             const response = new ResponseBuilder()
                 .setOk(false)
