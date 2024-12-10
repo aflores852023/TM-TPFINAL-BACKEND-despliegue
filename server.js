@@ -23,6 +23,7 @@ const PORT = ENVIROMENT.PORT || 3000;
 const allowedOrigins = [
     'https://tm-tpfinal-despliegue.vercel.app', // Tu frontend en producción
     'http://localhost:3000', // Opcional, para pruebas locales
+
 ];
 
 app.use(
@@ -30,7 +31,7 @@ app.use(
         origin: allowedOrigins,
         methods: ['GET', 'POST', 'PUT', 'DELETE'], 
         allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'], 
-       
+        credentials: true,    
     })
 );
 app.use(express.json());
