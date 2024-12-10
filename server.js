@@ -26,14 +26,21 @@ const allowedOrigins = [
 
 ];
 
-app.use(
-    cors({
-        origin: allowedOrigins,
-        methods: ['GET', 'POST', 'PUT', 'DELETE'], 
-        allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'], 
-        credentials: true,    
-    })
-);
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true); // Permite el origen
+        } else {
+            callback(new Error('No permitido por CORS'));
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
+    credentials: true,
+    optionsSuccessStatus: 200, // Para asegurar compatibilidad con navegadores antiguos
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(verifyApikeyMiddleware); // Middleware para verificar la API Key
 app.use('/api/channels', channelRouter);
