@@ -67,6 +67,15 @@ const checkAndSeedDatabase = async () => {
     }
 };
 
+mongoose.connection.on('connected', () => {
+    console.log('Conexión exitosa a MongoDB.');
+});
+
+mongoose.connection.on('error', (err) => {
+    console.error('Error de conexión a MongoDB:', err);
+});
+
+
 // Ejecutar la verificación al iniciar el servidor
 //checkAndSeedDatabase().then(() => {
 app.listen(PORT, () => {
