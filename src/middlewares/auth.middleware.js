@@ -63,7 +63,7 @@ export const verifyApikeyMiddleware = (req, res, next) => {
     try {
         // Busca la API Key en el encabezado o en los parámetros de la URL
         const apikey_header = req.headers['x-api-key'];
-        onsole.log('API Key recibida desde encabezado:', apikey_header);
+        console.log('API Key recibida desde encabezado:', apikey_header);
         const apikey_query = req.query['x-api-key'];
 
         // Selecciona la API Key (ya sea desde los encabezados o desde los parámetros de la URL)
