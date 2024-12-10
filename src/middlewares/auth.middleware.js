@@ -57,6 +57,7 @@ export const verifyTokenMiddleware = (roles_permitidos = []) => {
 
 export const verifyApikeyMiddleware = (req, res, next) => {
     console.log('Middleware de API Key activo');
+    console.log('la apikey recibida desde el front end es', req.headers['x-api-key'])
 
     try {
         // Busca la API Key en el encabezado o en los parámetros de la URL
