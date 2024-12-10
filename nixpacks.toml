@@ -1,0 +1,5 @@
+[phases.setup]
+runtime = "nodejs-18"
+
+[phases.start]
+cmd = "node server.js"
