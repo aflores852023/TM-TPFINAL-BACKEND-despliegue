@@ -187,6 +187,8 @@ export const verifyMailValidationTokenController = async (req, res) => { //verif
 }
 
 export const loginController = async (req, res) => { //POST login usuario
+    console.log('Llegó al controlador de login. Body recibido:', req.body);
+
     try {
         const { email, password } = req.body
         console.log('el email es ', email)
