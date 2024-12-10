@@ -81,7 +81,7 @@ export const verifyApikeyMiddleware = (req, res, next) => {
                 .setMessage('Unauthorized')
                 .setStatus(401)
                 .setPayload({
-                    detail: 'La API Key no es válida',
+                    detail: 'La API Key no es válida. API Key interna:' + ENVIROMENT.API_KEY_INTERN + ' y la apikey recibida: ' + apikey  
                 })
                 .build();
             return res.status(401).json(response);
