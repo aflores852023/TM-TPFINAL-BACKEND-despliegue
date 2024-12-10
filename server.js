@@ -34,14 +34,16 @@ const corsOptions = {
             callback(new Error('No permitido por CORS'));
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Incluye OPTIONS
     allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
-    credentials: true,
-    optionsSuccessStatus: 200, 
+    credentials: true,  
 };
-app.options('*', cors(corsOptions));
-app.use(cors(corsOptions));
 
+app.use(cors(corsOptions));
+app.options('*', (req, res) => {
+    console.log('Solicitud OPTIONS recibida para:', req.path);
+    res.sendStatus(204); //  
+});
 app.use(express.json());
 app.use(verifyApikeyMiddleware); // Middleware para verificar la API Key
 app.use('/api/channels', channelRouter);
