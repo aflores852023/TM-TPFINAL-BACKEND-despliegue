@@ -79,8 +79,8 @@ mongoose.connection.on('error', (err) => {
 
 // Ejecutar la verificación al iniciar el servidor
 //checkAndSeedDatabase().then(() => {
-app.listen(PORT, () => {
-    console.log(`El servidor se esta escuchando en http://localhost:${PORT}`);
+app.listen(process.env.PORT, () => {
+    console.log(`El servidor se esta escuchando en http://localhost:${process.env.PORT}`);
 });
 //}).catch((error) => {
 //    console.error('Error al verificar las colecciones o ejecutar el seed:', error);
