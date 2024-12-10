@@ -20,30 +20,25 @@ console.log("API Key Intern desde ENV:", process.env.API_KEY_INTERN);
 
 const app = express();
 const PORT = ENVIROMENT.PORT || 3000;
-const allowedOrigins = [
-    'https://tm-tpfinal-despliegue.vercel.app', // Tu frontend en producción
-    'http://localhost:3000', // Opcional, para pruebas locales
-
-];
-
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true); // Permite el origen
-        } else {
-            callback(new Error('No permitido por CORS'));
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Incluye OPTIONS
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
-    credentials: true,  
 };
-
 app.use(cors(corsOptions));
 app.options('*', (req, res) => {
     console.log('Solicitud OPTIONS recibida para:', req.path);
     res.sendStatus(204); //  
 });
+app.use((req, res, next) => {
+    console.log('Método:', req.method);
+    console.log('Ruta:', req.path);
+    console.log('Encabezado x-api-key:', req.headers['x-api-key']);
+    console.log('Origen:', req.headers['origin']);
+    next();
+});
+
+
 app.use(express.json());
 app.use(verifyApikeyMiddleware); // Middleware para verificar la API Key
 app.use('/api/channels', channelRouter);
