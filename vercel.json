@@ -6,11 +6,7 @@
             "use": "@vercel/node"
         }
     ],
-    "functions": {
-        "api/*": {
-            "maxDuration": 20
-        }
-    },
+    
     "routes": [
         {
             "src": "/(.*)",
