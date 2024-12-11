@@ -67,7 +67,8 @@ export const verifyApikeyMiddleware = (req, res, next) => {
         const apikey_query = req.query['x-api-key'];
 
         // Selecciona la API Key (ya sea desde los encabezados o desde los parámetros de la URL)
-        const apikey = apikey_header || apikey_query;
+        //const apikey = apikey_header || apikey_query;
+        const apikey = apikey_header;
 
         // Depuración: Imprime la API Key interna y la recibida
         console.log('API Key interna desde ENV:', ENVIROMENT.API_KEY_INTERN);
