@@ -1,4 +1,4 @@
- 
+// src/server.js
 import express from "express";
 import mongoose from './src/db/config.js';
 import cors from 'cors';
