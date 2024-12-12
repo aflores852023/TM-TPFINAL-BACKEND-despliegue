@@ -140,53 +140,37 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
 }
 
 
-export const verifyMailValidationTokenController = async (req, res) => { //verificar email por token 
+export const verifyMailValidationTokenController = async (req, res) => {
     try {
-        const { verification_token } = req.params
-        console.log('el token es ', verification_token)
+        const { verification_token } = req.params;
+
+        console.log('Token recibido:', verification_token);
 
         if (!verification_token) {
-            const response = new ResponseBuilder().setOk(false)
-                .setStatus(400)
-                .setPayload({
-                    'detail': 'Falta enviar token'
-                })
-                .build()
-            return res.json(response)
+            return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
         }
-        //Verificamos la firma del token, debe ser la misma que mi clave secreta, eso asegura que este token sea emitido por mi servidor
-        //Si fallara la lectura/verificacion/expiracion hara un throw
-        //La constante decoded tiene el payload de mi token
-        const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET)
-        //console.log('el decoded es ', decoded)  
 
-        //Busco al usuario en mi DB por email
-        const user = await User.findOne({ email: decoded.email })
+        const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET);
+        console.log('Token decodificado:', decoded);
+
+        const user = await User.findOne({ email: decoded.email });
         if (!user) {
             return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
         }
+
         if (user.emailVerified) {
             return res.redirect(`${ENVIROMENT.URL_FRONT}/already-verified`);
         }
-        //En caso de pasar la validaciones
-        user.emailVerified = true
-        //user.verificationToken = undefined
 
-        await user.save()
-        const response = new ResponseBuilder()
-            .setOk(true)
-            .setMessage('Email verificado con exito')
-            .setStatus(200)
-            .setPayload({
-                message: "Usuario validado"
-            })
-            .build()
-        res.json(response)
+        user.emailVerified = true;
+        await user.save();
+
+        return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-success`);
+    } catch (error) {
+        console.error('Error en la verificación del token:', error);
+        return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
     }
-    catch (error) {
-        console.error(error)
-    }
-}
+};
 
 
 export const loginController = async (req, res) => { //POST login usuario
