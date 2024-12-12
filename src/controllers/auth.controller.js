@@ -1,3 +1,4 @@
+// src/controllers/auth.controller.js
 import ENVIROMENT from "../config/enviroment.config.js"
 import User from "../models/user.model.js"
 import ResponseBuilder from "../utils/builders/responseBuilder.js"
@@ -162,10 +163,10 @@ export const verifyMailValidationTokenController = async (req, res) => { //verif
         //Busco al usuario en mi DB por email
         const user = await User.findOne({ email: decoded.email })
         if (!user) {
-            //Logica de error de not found
+            return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
         }
         if (user.emailVerified) {
-            //Logica de email ya verificado
+            return res.redirect(`${ENVIROMENT.URL_FRONT}/already-verified`);
         }
         //En caso de pasar la validaciones
         user.emailVerified = true
