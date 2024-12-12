@@ -21,7 +21,7 @@ const PORT = ENVIROMENT.PORT || 3000;
 
 // Configuración de CORS
 const corsOptions = {
-    origin: '*',
+    origin:  ENVIROMENT.URL_FRONT,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
 };
