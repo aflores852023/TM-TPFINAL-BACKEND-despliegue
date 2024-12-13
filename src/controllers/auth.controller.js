@@ -146,16 +146,16 @@ export const verifyMailValidationTokenController = async (req, res) => {
     try {
         const { verification_token } = req.params;
 
-        console.log('Token recibido:', verification_token);
-
         if (!verification_token) {
-            return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
+            return res.status(400).json({
+                ok: false,
+                message: 'Falta enviar el token',
+            });
         }
 
         const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET);
-        console.log('Token decodificado:', decoded);
-
         const user = await User.findOne({ email: decoded.email });
+
         if (!user) {
             return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
         }
@@ -169,7 +169,7 @@ export const verifyMailValidationTokenController = async (req, res) => {
 
         return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-success`);
     } catch (error) {
-        console.error('Error en la verificación del token:', error);
+        console.error(error);
         return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
     }
 };
