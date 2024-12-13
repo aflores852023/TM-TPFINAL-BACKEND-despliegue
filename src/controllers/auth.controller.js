@@ -74,8 +74,7 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
         //const url_verification = `${ENVIROMENT.URL_FRONT}/verify/?token=${verificationToken}&x-api-key=${ENVIROMENT.API_KEY_INTERN}`
         //const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`;
        // const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`;
-       urlBack='https://tm-tpfinal-backend-despliegue.vercel.app'
-       const url_verification = `${urlBack}/api/auth/verify/${verificationToken}`;
+        const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}`;
 
         
         await sendEmail({
