@@ -58,44 +58,38 @@ export const verifyTokenMiddleware = (roles_permitidos = []) => {
 export const verifyApikeyMiddleware = (req, res, next) => {
     console.log('Middleware de API Key activo');
     console.log('Todos los encabezados recibidos:', req.headers);
-    console.log('la apikey recibida desde el front end es', req.headers['x-api-key'])
+    console.log('la apikey recibida desde el front end es', req.headers['x-api-key']);
 
     try {
         // Busca la API Key en el encabezado o en los parámetros de la URL
         const apikey_header = req.headers['x-api-key'];
-        console.log('API Key recibida desde encabezado:', apikey_header);
         const apikey_query = req.query['x-api-key'];
 
         // Selecciona la API Key (ya sea desde los encabezados o desde los parámetros de la URL)
-        //const apikey = apikey_header || apikey_query;
-        const apikey = apikey_header;
+        const apikey = apikey_header || apikey_query;
 
         // Depuración: Imprime la API Key interna y la recibida
         console.log('API Key interna desde ENV:', ENVIROMENT.API_KEY_INTERN);
         console.log('API Key recibida:', apikey);
 
-        //  la API Key esté presente y sea válida
+        // Verifica que la API Key esté presente y sea válida
         if (!apikey || apikey.trim() !== ENVIROMENT.API_KEY_INTERN.trim()) {
-            // Si la API Key no es válida, devuelve un error de autenticación
-            console.log('API Key recibida:', apikey);  // Mostrar el valor de la API Key recibida
-            console.log('API Key interna:', ENVIROMENT.API_KEY_INTERN); // Mostrar el valor de la API Key interna
+            console.log('API Key no válida.');
             const response = new ResponseBuilder()
                 .setOk(false)
                 .setMessage('Unauthorized')
                 .setStatus(401)
                 .setPayload({
-                    detail: 'La API Key no es válida. API Key interna:' 
-                    + ENVIROMENT.API_KEY_INTERN + ' y la apikey recibida: ' 
-                    + apikey  
+                    detail: `La API Key no es válida. API Key interna: ${ENVIROMENT.API_KEY_INTERN} y la apikey recibida: ${apikey}`,
                 })
                 .build();
             return res.status(401).json(response);
         }
 
         // Si la API Key es válida, pasa al siguiente middleware o controlador
-        return next();
+        next();
     } catch (error) {
-        // Si ocurre un error durante el proceso, devuelve un error interno
+        console.error('Error en la autenticación de la API Key:', error.message);
         const response = new ResponseBuilder()
             .setOk(false)
             .setMessage('Error en la autenticación de la API Key')
