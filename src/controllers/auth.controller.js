@@ -145,8 +145,10 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
 export const verifyMailValidationTokenController = async (req, res) => {
     try {
         const { verification_token } = req.params;
+        console.log('Token recibido:', verification_token);
 
         if (!verification_token) {
+            console.log('Falta el token de verificación');
             return res.status(400).json({
                 ok: false,
                 message: 'Falta enviar el token',
@@ -154,26 +156,30 @@ export const verifyMailValidationTokenController = async (req, res) => {
         }
 
         const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET);
+        console.log('Token decodificado:', decoded);
+
         const user = await User.findOne({ email: decoded.email });
+        console.log('Usuario encontrado:', user);
 
         if (!user) {
+            console.log('Usuario no encontrado, redirigiendo a fallo de verificación');
             return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
         }
 
         if (user.emailVerified) {
+            console.log('El correo ya está verificado, redirigiendo a ya verificado');
             return res.redirect(`${ENVIROMENT.URL_FRONT}/already-verified`);
         }
 
         user.emailVerified = true;
         await user.save();
-
+        console.log('Correo verificado con éxito, redirigiendo a éxito');
         return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-success`);
     } catch (error) {
-        console.error(error);
+        console.error('Error al verificar el token:', error);
         return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
     }
 };
-
 
 export const loginController = async (req, res) => { //POST login usuario
     console.log('Llegó al controlador de login. Body recibido:', req.body);
