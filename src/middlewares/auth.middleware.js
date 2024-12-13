@@ -6,23 +6,25 @@ import jwt from 'jsonwebtoken'
 export const verifyTokenMiddleware = (roles_permitidos = []) => {
     return (req, res, next) => {
         try {
+            console.log('Encabezados recibidos:', req.headers);
+
             const auth_header = req.headers['authorization'];
-            if (!auth_header) {
-                console.log('Falta el encabezado de autorización.');
+            if (!auth_header || !auth_header.startsWith('Bearer ')) {
+                console.log('Encabezado de autorización faltante o malformado.');
                 return res.status(401).json({
                     ok: false,
-                    message: 'Falta token de autorización',
-                    detail: 'Se espera un token de autorización',
+                    message: 'Token de autorización faltante o malformado',
+                    detail: 'Debe incluir un encabezado de autorización con formato Bearer',
                 });
             }
 
             const access_token = auth_header.split(' ')[1];
             if (!access_token) {
-                console.log('Token malformado.');
+                console.log('Token no presente.');
                 return res.status(401).json({
                     ok: false,
-                    message: 'El token de autorización está malformado',
-                    detail: 'Se espera un token de autorización',
+                    message: 'Token de autorización no presente',
+                    detail: 'El token de autorización debe ser válido',
                 });
             }
 
