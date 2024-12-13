@@ -145,39 +145,84 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
 export const verifyMailValidationTokenController = async (req, res) => {
     try {
         const { verification_token } = req.params;
-        console.log('Token recibido:', verification_token);
 
         if (!verification_token) {
-            console.log('Falta el token de verificación');
-            return res.status(400).json({
-                ok: false,
-                message: 'Falta enviar el token',
-            });
+            return res.status(400).send(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Verificación Fallida</title>
+                </head>
+                <body>
+                    <h1>Falta enviar el token</h1>
+                    <p>No se recibió un token válido para la verificación.</p>
+                </body>
+                </html>
+            `);
         }
 
         const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET);
-        console.log('Token decodificado:', decoded);
-
         const user = await User.findOne({ email: decoded.email });
-        console.log('Usuario encontrado:', user);
 
         if (!user) {
-            console.log('Usuario no encontrado, redirigiendo a fallo de verificación');
-            return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
+            return res.status(404).send(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Verificación Fallida</title>
+                </head>
+                <body>
+                    <h1>Usuario no encontrado</h1>
+                    <p>El token no está asociado a un usuario válido.</p>
+                </body>
+                </html>
+            `);
         }
 
         if (user.emailVerified) {
-            console.log('El correo ya está verificado, redirigiendo a ya verificado');
-            return res.redirect(`${ENVIROMENT.URL_FRONT}/already-verified`);
+            return res.status(200).send(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Correo Ya Verificado</title>
+                </head>
+                <body>
+                    <h1>Correo ya verificado</h1>
+                    <p>Tu correo electrónico ya ha sido verificado anteriormente.</p>
+                </body>
+                </html>
+            `);
         }
 
         user.emailVerified = true;
         await user.save();
-        console.log('Correo verificado con éxito, redirigiendo a éxito');
-        return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-success`);
+
+        return res.status(200).send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Verificación Exitosa</title>
+            </head>
+            <body>
+                <h1>Correo verificado con éxito</h1>
+                <p>Gracias por verificar tu correo electrónico. Ya puedes iniciar sesión.</p>
+            </body>
+            </html>
+        `);
     } catch (error) {
-        console.error('Error al verificar el token:', error);
-        return res.redirect(`${ENVIROMENT.URL_FRONT}/verification-failed`);
+        console.error(error);
+        return res.status(500).send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Error en la Verificación</title>
+            </head>
+            <body>
+                <h1>Verificación Fallida</h1>
+                <p>Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente.</p>
+            </body>
+            </html>
+        `);
     }
 };
 
