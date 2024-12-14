@@ -113,18 +113,9 @@ export const createMessageInChannel = async (req, res) => {
     try {
         const { channelId } = req.params;
         const { text } = req.body;
-
-        console.log('Datos recibidos en el backend:', { channelId, text });
-        const token = req.headers.authorization?.split(' ')[1];
-
-        if (!token) {
-            return res.status(401).json({ ok: false, message: 'No token provided' });
-        }
-
+        const token = req.headers.authorization.split(' ')[1];
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log('Token decodificado:', decoded);
-
-        const senderId = decoded.id;
+        const senderId = decoded ? decoded.id : SYSTEM_USER_ID;
 
         if (!mongoose.Types.ObjectId.isValid(senderId)) {
             return res.status(400).json({ ok: false, message: 'Invalid sender ID.' });
@@ -136,11 +127,9 @@ export const createMessageInChannel = async (req, res) => {
             channelId,
         });
 
-        console.log('Mensaje creado:', message);
-
-        res.status(200).json({ ok: true, data: message });
+        res.status(200).json({ ok: true, data: message }); // Asegúrate de devolver un objeto JSON válido
     } catch (error) {
-        console.error('Error al crear el mensaje:', error.message);
+        console.error('Error al crear el mensaje:', error);
         res.status(500).json({ ok: false, message: 'Error creating message.', error: error.message });
     }
 };
