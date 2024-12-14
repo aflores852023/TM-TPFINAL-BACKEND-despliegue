@@ -1,3 +1,4 @@
+// controllers/channel.controller.js
 import ChannelRepository from '../repositories/channel.repository.js';
 import Channel from '../models/Channel.js';
 import Message from '../models/Message.js';
@@ -108,14 +109,22 @@ export const getChannelsByWorkspace = async (req, res) => {
 };
 
 
-// Crear un nuevo mensaje en un canal
 export const createMessageInChannel = async (req, res) => {
     try {
         const { channelId } = req.params;
         const { text } = req.body;
-        const token = req.headers.authorization.split(' ')[1];
+
+        console.log('Datos recibidos en el backend:', { channelId, text });
+        const token = req.headers.authorization?.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ ok: false, message: 'No token provided' });
+        }
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const senderId = decoded ? decoded.id : SYSTEM_USER_ID; // Usa el ID del sistema si no hay usuario autenticado.
+        console.log('Token decodificado:', decoded);
+
+        const senderId = decoded.id;
 
         if (!mongoose.Types.ObjectId.isValid(senderId)) {
             return res.status(400).json({ ok: false, message: 'Invalid sender ID.' });
@@ -127,13 +136,14 @@ export const createMessageInChannel = async (req, res) => {
             channelId,
         });
 
+        console.log('Mensaje creado:', message);
+
         res.status(200).json({ ok: true, data: message });
     } catch (error) {
-        console.error('Error al crear el mensaje:', error);
+        console.error('Error al crear el mensaje:', error.message);
         res.status(500).json({ ok: false, message: 'Error creating message.', error: error.message });
     }
 };
-
 
 export const getMessagesByChannelId = async (req, res) => {
     const { channelId } = req.params;
