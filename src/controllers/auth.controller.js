@@ -74,7 +74,9 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
         //const url_verification = `${ENVIROMENT.URL_FRONT}/verify/?token=${verificationToken}&x-api-key=${ENVIROMENT.API_KEY_INTERN}`
         //const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`;
        // const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`;
+       //const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}`;
         const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}`;
+
 
         
         await sendEmail({
@@ -143,90 +145,88 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
 
 }
 
+try {
+    const { verification_token } = req.params;
 
-export const verifyMailValidationTokenController = async (req, res) => {
-    try {
-        const { verification_token } = req.params;
-
-        if (!verification_token) {
-            return res.status(400).send(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Verificación Fallida</title>
-                </head>
-                <body>
-                    <h1>Falta enviar el token</h1>
-                    <p>No se recibió un token válido para la verificación.</p>
-                </body>
-                </html>
-            `);
-        }
-
-        const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET);
-        const user = await User.findOne({ email: decoded.email });
-
-        if (!user) {
-            return res.status(404).send(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Verificación Fallida</title>
-                </head>
-                <body>
-                    <h1>Usuario no encontrado</h1>
-                    <p>El token no está asociado a un usuario válido.</p>
-                </body>
-                </html>
-            `);
-        }
-
-        if (user.emailVerified) {
-            return res.status(200).send(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Correo Ya Verificado</title>
-                </head>
-                <body>
-                    <h1>Correo ya verificado</h1>
-                    <p>Tu correo electrónico ya ha sido verificado anteriormente.</p>
-                </body>
-                </html>
-            `);
-        }
-
-        user.emailVerified = true;
-        await user.save();
-
-        return res.status(200).send(`
+    if (!verification_token) {
+        return res.status(400).send(`
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Verificación Exitosa</title>
+                <title>Verificación Fallida</title>
             </head>
             <body>
-                <h1>Correo verificado con éxito</h1>
-                <p>Gracias por verificar tu correo electrónico. Ya puedes iniciar sesión.</p>
-            </body>
-            </html>
-        `);
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Error en la Verificación</title>
-            </head>
-            <body>
-                <h1>Verificación Fallida</h1>
-                <p>Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente.</p>
+                <h1>Error</h1>
+                <p>El token no fue proporcionado.</p>
             </body>
             </html>
         `);
     }
-};
+
+    const decoded = jwt.verify(verification_token, ENVIROMENT.JWT_SECRET);
+    const user = await User.findOne({ email: decoded.email });
+
+    if (!user) {
+        return res.status(404).send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Verificación Fallida</title>
+            </head>
+            <body>
+                <h1>Error</h1>
+                <p>Usuario no encontrado.</p>
+            </body>
+            </html>
+        `);
+    }
+
+    if (user.emailVerified) {
+        return res.status(200).send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Correo Ya Verificado</title>
+            </head>
+            <body>
+                <h1>Correo Ya Verificado</h1>
+                <p>Tu correo ya había sido verificado anteriormente.</p>
+            </body>
+            </html>
+        `);
+    }
+
+    user.emailVerified = true;
+    await user.save();
+
+    return res.status(200).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Verificación Exitosa</title>
+        </head>
+        <body>
+            <h1>¡Éxito!</h1>
+            <p>Tu correo electrónico fue verificado con éxito. Ahora puedes iniciar sesión.</p>
+        </body>
+        </html>
+    `);
+} catch (error) {
+    console.error('Error al verificar el correo:', error);
+    return res.status(500).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Error de Verificación</title>
+        </head>
+        <body>
+            <h1>Error Interno</h1>
+            <p>Hubo un problema verificando tu correo. Intenta nuevamente.</p>
+        </body>
+        </html>
+    `);
+}
+
 
 export const loginController = async (req, res) => { //POST login usuario
     console.log('Llegó al controlador de login. Body recibido:', req.body);
