@@ -321,50 +321,58 @@ export const loginController = async (req, res) => { //POST login usuario
 }
 
 
-export const forgotPasswordController = async (req, res) => { //POST forgot password
+export const forgotPasswordController = async (req, res) => {
     try {
-        const { email } = req.body
-        //Validamos que llegue el email
-        console.log(email)
-        const user = await UserRepository.obtenerPorEmail(email)
-        if (!user) {
-            //Logica de usuario no encontrado
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({
+                ok: false,
+                message: 'El campo email es requerido',
+            });
         }
+
+        const user = await UserRepository.obtenerPorEmail(email);
+        if (!user) {
+            return res.status(404).json({
+                ok: false,
+                message: 'Usuario no encontrado con ese correo',
+            });
+        }
+
         const resetToken = jwt.sign({ email: user.email }, ENVIROMENT.JWT_SECRET, {
-            expiresIn: '1h'
-        })
+            expiresIn: '1h',
+        });
+
         user.resetToken = resetToken;
-        await UserRepository.guardarUsuario(user); // Asegúrate de que esto esté implementado
-        const URL_FRONT = ENVIROMENT.URL_FRONT
-        const resetUrl = `${URL_FRONT}/reset-password/${resetToken}`
-        sendEmail({
+        await UserRepository.guardarUsuario(user);
+
+        const resetUrl = `${ENVIROMENT.URL_FRONT || 'http://localhost:3000'}/reset-password/${resetToken}`;
+        await sendEmail({
             from: ENVIROMENT.GMAIL_USER,
             to: user.email,
             subject: 'Restablecer contraseña',
             html: `
                 <div>
                     <h1>Has solicitado restablecer tu contraseña</h1>
-                    <p>Has click en el enlace de abajo para restablecer tu contraseña</p>
-                    <a href='${resetUrl}'>Restablecer</a>
+                    <p>Haz click en el enlace de abajo para restablecer tu contraseña:</p>
+                    <a href="${resetUrl}">Restablecer</a>
                 </div>
-            `
-        })
-        const response = new ResponseBuilder()
-        response
-            .setOk(true)
-            .setStatus(200)
-            .setMessage('Se envio el correo')
-            .setPayload({
-                detail: 'Se envio un correo electronico con las instrucciones para restablecer la contraseña.'
-            })
-            .build()
-        return res.json(response)
-    }
-    catch (error) {
-        //Manajer logica de error
-    }
-}
+            `,
+        });
 
+        return res.status(200).json({
+            ok: true,
+            message: 'Se envió un correo electrónico con las instrucciones para restablecer la contraseña',
+        });
+    } catch (error) {
+        console.error('Error en forgotPasswordController:', error.message);
+        return res.status(500).json({
+            ok: false,
+            message: 'Ocurrió un error interno en el servidor',
+        });
+    }
+};
 
 export const resetTokenController = async (req, res) => {
     const { reset_token } = req.params;
