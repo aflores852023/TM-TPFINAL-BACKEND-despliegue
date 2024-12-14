@@ -75,7 +75,9 @@ export const registerUserController = async (req, res) => { //POST regsitrar usu
         //const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`;
        // const url_verification = `${ENVIROMENT.URL_FRONT}/api/auth/verify/${verificationToken}`;
        //const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}`;
-        const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}`;
+        //const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}`;
+      const url_verification = `${ENVIROMENT.URL_BACKEND}/api/auth/verify/${verificationToken}?x-api-key=${ENVIROMENT.API_KEY_INTERN}`;
+
 
 
         
