@@ -8,8 +8,9 @@ import {
   deleteChannel,
   getChannelsByWorkspace,
   createMessageInChannel,
+  getMessagesByChannelId,
 } from '../controllers/channel.controller.js';
-import { getMessagesByChannelId } from '../controllers/message.controller.js';
+//import { getMessagesByChannelId } from '../controllers/message.controller.js';
 const router = express.Router();
 
 // Rutas CRUD generales
