@@ -1,3 +1,4 @@
+// src/router/message.router.js
 import express from 'express';
 import {
     getAllMessages,

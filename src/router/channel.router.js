@@ -1,3 +1,4 @@
+// src/router/channel.router.js
 import express from 'express';
 import {
   getAllChannels,
@@ -7,7 +8,7 @@ import {
   deleteChannel,
   getChannelsByWorkspace,
 } from '../controllers/channel.controller.js';
-import { createMessageInChannel, getMessagesByChannelId } from '../controllers/channel.controller.js';
+import { createMessageInChannel, getMessagesByChannelId } from '../controllers/message.controller.js';
 const router = express.Router();
 
 // Rutas CRUD generales
